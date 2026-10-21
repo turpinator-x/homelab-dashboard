@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jarrod's Homelab</title>
+  <style>
+    :root {
+      --bg: #111827; --card: #1f2937; --text: #e5e7eb; --muted: #9ca3af;
+      --cpu: #a78bfa; --mem: #60a5fa; --pods: #fbbf24; --nodes: #34d399; --up: #34d399; --down: #f87171;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text);
+           font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 16px; }
+    h1 { margin: 0 0 4px; font-size: 1.8rem; }
+    .sub { color: var(--muted); margin: 0 0 28px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    .card { background: var(--card); border-radius: 12px; padding: 24px; text-align: center; }
+    .label { color: var(--muted); font-size: .95rem; }
+    .value { font-size: 2.6rem; font-weight: 700; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
+    .note { color: var(--muted); font-size: .85rem; }
+    h2 { font-size: 1.2rem; margin: 36px 0 12px; }
+    .apps { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .app { background: var(--card); border-radius: 12px; padding: 16px 20px; display: flex;
+           align-items: center; gap: 12px; color: var(--text); text-decoration: none; }
+    .app:hover { outline: 1px solid var(--muted); }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
+    .dot.up { background: var(--up); } .dot.down { background: var(--down); }
+    footer { margin-top: 36px; color: var(--muted); font-size: .85rem; }
+    footer a { color: var(--mem); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Jarrod's Homelab</h1>
+  <p class="sub">A two-node k3s cluster (mini PC + Raspberry Pi 5), deployed with GitOps by Flux. Live numbers from Prometheus.</p>
+
+  <div class="grid">
+    <div class="card"><div class="label">CPU usage</div><div class="value" id="cpu" style="color:var(--cpu)">…</div><div class="note">all nodes, 5-minute average</div></div>
+    <div class="card"><div class="label">Memory used</div><div class="value" id="mem" style="color:var(--mem)">…</div><div class="note" id="mem-note">&nbsp;</div></div>
+    <div class="card"><div class="label">Pods running</div><div class="value" id="pods" style="color:var(--pods)">…</div><div class="note">across all namespaces</div></div>
+    <div class="card"><div class="label">Nodes ready</div><div class="value" id="nodes" style="color:var(--nodes)">…</div><div class="note" id="uptime">&nbsp;</div></div>
+  </div>
+
+  <h2>Apps</h2>
+  <div class="apps">
+    <a class="app" href="https://linkding.jarrodturpin.dev"><span class="dot" id="app-linkding"></span>Linkding <span class="note">bookmarks</span></a>
+    <a class="app" href="https://audiobooks.jarrodturpin.dev"><span class="dot" id="app-audiobookshelf"></span>Audiobookshelf <span class="note">audiobooks</span></a>
+  </div>
+
+  <footer>
+    <span id="updated">Loading…</span> ·
+    <a href="https://github.com/turpinator-x/homelab">Cluster config on GitHub</a> ·
+    <a href="https://github.com/turpinator-x/homelab-dashboard">Dashboard source</a>
+  </footer>
+</main>
+
+<script>
+  const gb = (bytes) => (bytes / 1024 ** 3).toFixed(1) + " GB";
+
+  async function refresh() {
+    try {
+      const response = await fetch("/api/stats");
+      if (!response.ok) throw new Error(response.status);
+      const s = await response.json();
+      document.getElementById("cpu").textContent = s.cpu_percent.toFixed(1) + "%";
+      document.getElementById("mem").textContent = gb(s.memory_used_bytes);
+      document.getElementById("mem-note").textContent = "of " + gb(s.memory_total_bytes);
+      document.getElementById("pods").textContent = s.pods_running;
+      document.getElementById("nodes").textContent = s.nodes_ready + " / " + s.nodes_total;
+      document.getElementById("uptime").textContent = "up " + Math.floor(s.uptime_seconds / 86400) + " days";
+      for (const [name, up] of Object.entries(s.apps)) {
+        const dot = document.getElementById("app-" + name);
+        if (dot) dot.className = "dot " + (up ? "up" : "down");
+      }
+      document.getElementById("updated").textContent =
+        "Updated " + new Date(s.updated * 1000).toLocaleTimeString();
+    } catch (err) {
+      document.getElementById("updated").textContent = "Metrics unavailable, retrying…";
+    }
+  }
+
+  refresh();
+  setInterval(refresh, 15000);
+</script>
+</body>
+</html>

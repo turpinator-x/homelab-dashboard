@@ -1,0 +1,2 @@
+printf '.venv\n.git\n.github\n__pycache__\n.pytest_cache\n.ruff_cache\ntests\n*.md\n' > .dockerignore
+cat .dockerignore
