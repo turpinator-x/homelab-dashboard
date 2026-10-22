@@ -1,6 +1,6 @@
 # Build stage: install the locked dependencies into a virtualenv with uv.
 FROM python:3.15-slim AS build
-COPY --from=ghcr.io/astral-sh/uv:0.13.4 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
