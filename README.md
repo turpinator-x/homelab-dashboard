@@ -67,6 +67,6 @@ On every push and pull request, GitHub Actions runs the same checks, then builds
 
 ## Built with AI assistance
 
-I wrote the backend (`main.py`) myself, with [Claude Code](https://claude.com/claude-code) as a tutor explaining each piece. Claude Code generated the frontend (`static/index.html`), and drafted the tests, Dockerfile and CI workflow, which I reviewed and typed in.
+[Claude Code](https://claude.com/claude-code) wrote the application code: the FastAPI backend (`main.py`), the frontend (`static/index.html`), the tests, the Dockerfile and the CI workflow. I set the requirements and did the hands-on work: Claude Code explained each part, and I typed the commands and pasted and edited the code myself, then reviewed, ran and debugged it. My own focus is the platform side: the CI pipeline, the multi-arch image, the Flux deployment, the pod security settings and the NetworkPolicy, documented in [turpinator-x/homelab](https://github.com/turpinator-x/homelab/blob/main/docs/dashboard.md).
 
 The project idea comes from the KubeCraft community.
