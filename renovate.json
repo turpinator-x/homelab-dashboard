@@ -1,4 +1,40 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"]
+  "extends": ["config:recommended"],
+  "timezone": "America/Los_Angeles",
+  "schedule": ["before 6am on monday"],
+  "minimumReleaseAge": "3 days",
+  "platformAutomerge": false,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Low risk: patch and digest updates merge on their own once CI passes",
+      "matchUpdateTypes": ["patch", "digest", "pin", "pinDigest"],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Low risk: minor updates of GitHub Actions",
+      "matchUpdateTypes": ["minor"],
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Low risk: minor updates of dev-only tools (tests and linting, not shipped in the image)",
+      "matchUpdateTypes": ["minor"],
+      "matchPackageNames": ["ruff", "pytest"],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Majors always wait for the weekly review",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    }
+  ]
 }
