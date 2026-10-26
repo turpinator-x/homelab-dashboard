@@ -16,9 +16,9 @@ Nothing scheduled. Ideas: per-app response times, a small uptime history.
 ## Known issues
 
 - `v0.1.1` was tagged on the wrong commit and is skipped. Tags are protected, so it stays.
-- `.dockerignore` holds the text of the `printf` command that was meant to create it, so it ignores nothing and `.venv` is sent as build context. The image is unaffected (the Dockerfile copies files by name), but builds upload more than they need.
 
 ## Don't repeat
 
 - Files with mode 600 broke the non-root image; the Dockerfile now runs `chmod -R a+rX main.py static`.
+- `.dockerignore` once held the text of the `printf` command meant to create it, so nothing was ignored. Check generated files with `cat` after creating them.
 - `httpx2` (Starlette's suggested successor) was blocked as an unvetted package; staying on `httpx`.

@@ -1,2 +1,10 @@
-printf '.venv\n.git\n.github\n__pycache__\n.pytest_cache\n.ruff_cache\ntests\n*.md\n' > .dockerignore
-cat .dockerignore
+.venv
+.git
+.github
+.claude
+__pycache__
+.pytest_cache
+.ruff_cache
+tests
+docs
+*.md
