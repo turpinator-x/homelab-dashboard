@@ -12,6 +12,7 @@ Public status page for Jarrod's k3s homelab (dashboard.jarrodturpin.dev). A smal
 - **Public repo, public page.** Show totals only: no pod names, IPs or internal hostnames. PromQL stays fixed in code; visitors never send queries.
 - Keep the container locked down (non-root UID 10001, read-only root FS, no SA token). Files copied into the image must be world-readable.
 - Frontend: no frameworks, CDNs, third-party scripts or fonts.
+- New Python dependencies may be added without asking if they pass all of: established project (clear maintainer, active releases, widely used), name checked against typosquats, wheels available for amd64 and arm64, few new transitive packages. Add with `uv add`, commit `uv.lock`, and list each new package in the commit message. Anything failing a check: ask Jarrod.
 - Claude Code wrote the app code. Docs must keep saying so; never describe it as Jarrod's own Python.
 - Jarrod is learning Python: explain changes in plain words.
 - Ask before pushing to main or creating a `v*` tag (a tag publishes an image to GHCR; deploy is a separate PR in `homelab`).
