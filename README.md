@@ -1,6 +1,7 @@
 # homelab-dashboard
 
 [![ci](https://github.com/turpinator-x/homelab-dashboard/actions/workflows/ci.yaml/badge.svg)](https://github.com/turpinator-x/homelab-dashboard/actions/workflows/ci.yaml)
+[![secret-scan](https://github.com/turpinator-x/homelab-dashboard/actions/workflows/secret-scan.yaml/badge.svg)](https://github.com/turpinator-x/homelab-dashboard/actions/workflows/secret-scan.yaml)
 
 A live, public status page for my two-node k3s homelab: **https://dashboard.jarrodturpin.dev**
 
@@ -37,6 +38,9 @@ The page is public, so it's built to expose as little as possible:
   - GitHub Actions are pinned to commit SHAs.
   - Images are published with the workflow's short-lived token, not a stored password.
   - Images ship with build provenance and an SBOM.
+  - Renovate keeps dependencies current: low-risk updates merge once CI passes, and majors wait for review.
+  - Release tags and `main` are protected from being moved, force-pushed or deleted.
+  - Hooks and a full-history gitleaks scan in CI block leaked credentials.
 
 ## Run it locally
 
@@ -63,7 +67,7 @@ uv run ruff format --check . && uv run ruff check . && uv run pytest
 
 The tests replace the Prometheus call with a fake one, so they need no cluster. They cover the health check, the response shape, app up/down, the cache, and the 503 path.
 
-On every push and pull request, GitHub Actions runs the same checks, then builds the image for `linux/amd64` and `linux/arm64` (the cluster has a mini PC and a Raspberry Pi 5). Pushing a `v*` tag publishes the image to `ghcr.io/turpinator-x/homelab-dashboard` with that version.
+On every push and pull request, GitHub Actions runs the same checks, then builds the image for `linux/amd64` and `linux/arm64` (the cluster has a mini PC and a Raspberry Pi 5). Pushing a `v*` tag publishes the image to `ghcr.io/turpinator-x/homelab-dashboard` with that version. The current release is `v0.1.2`, on Python 3.15. Commit messages follow Conventional Commits, enforced by Commitizen.
 
 ## Built with AI assistance
 
