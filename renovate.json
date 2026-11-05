@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "ignorePaths": [".github/workflows/secret-scan.yaml"],
   "timezone": "America/Los_Angeles",
   "schedule": ["before 6am on monday"],
   "minimumReleaseAge": "3 days",

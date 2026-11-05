@@ -11,7 +11,7 @@ case "$file" in
   *) exit 0 ;;
 esac
 
-cd "$repo"
+cd "$repo" || exit 1
 uv run --frozen ruff format -q "$file"
 if ! out=$(uv run --frozen ruff check . 2>&1 && uv run --frozen pytest -q 2>&1); then
   echo "ruff/pytest failed after editing $file:" >&2
