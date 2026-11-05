@@ -8,3 +8,18 @@ wheels/
 
 # Virtual environments
 .venv
+
+# repo-baseline: secrets, never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.agekey
+*.kubeconfig
+kubeconfig
+*.tfstate
+*.tfstate.*
+dev-keys/
