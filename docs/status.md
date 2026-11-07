@@ -1,13 +1,15 @@
 # Status
 
-_Last updated: 2026-10-26_
+_Last updated: 2026-11-06_
 
 ## Running
 
 - **v0.1.2** live at dashboard.jarrodturpin.dev on Python 3.15, amd64 + arm64 image on GHCR.
 - CI: ruff format check, ruff, pytest, then a multi-arch build; images are pushed only for `v*` tags, with provenance and an SBOM.
-- Renovate: low-risk updates auto-merge; the rest wait for a Monday batch reviewed with the `homelab-pr-review` skill.
-- Rulesets: `main` can't be deleted or force-pushed; `v*` tags can't be moved or deleted.
+- Secret scan: gitleaks over the full history in `.github/workflows/secret-scan.yaml`.
+- Repo baseline (since 2026-11-04): Commitizen enforces Conventional Commits; pre-commit runs the secret checks and shellcheck.
+- Renovate: low-risk updates auto-merge after a 3-day wait, with a weekly lock file refresh; the rest wait for a Monday batch reviewed with the `homelab-pr-review` skill. No Renovate PRs are open.
+- Rulesets (`protect-main`, `protect-release-tags`, both active): `main` can't be deleted or force-pushed; `v*` tags can't be moved or deleted.
 
 ## Next
 
