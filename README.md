@@ -16,18 +16,19 @@ flowchart LR
     D -- "fixed PromQL queries" --> P["Prometheus<br>(kube-prometheus-stack)"]
 ```
 
-- **Backend** (`main.py`): a small FastAPI app. It sends a fixed set of PromQL queries to the cluster's Prometheus in parallel, caches the answers for 15 seconds, and serves them as JSON at `/api/stats`. If Prometheus is unavailable, it keeps serving the last good numbers. If it has none yet, it returns 503.
+- **Backend** (`main.py`): a small FastAPI app. It sends a fixed set of PromQL queries to the cluster's Prometheus in parallel, caches the answers for 15 seconds, and serves them as JSON at `/api/stats`. `/healthz` answers the Kubernetes probes without touching Prometheus. If Prometheus is unavailable, it keeps serving the last good numbers. If it has none yet, it returns 503.
 - **Frontend** (`static/index.html`): one static page, with no framework and no third-party scripts or fonts. It polls `/api/stats`.
-- **Deployment:** the Kubernetes manifests live in my GitOps repo, [turpinator-x/homelab](https://github.com/turpinator-x/homelab), and Flux deploys them.
+- **Image** (`Dockerfile`): a two-stage build. uv installs the locked dependencies in the first stage, and the final image has only Python, the virtualenv and the app, running as UID 10001.
+- **Deployment:** the Kubernetes manifests live in my GitOps repo, [turpinator-x/homelab](https://github.com/turpinator-x/homelab), and Flux deploys them. Publishing and deploying are separate steps: a tag publishes an image, and the version only changes on the cluster when the image tag changes in that repo.
 
 ## Security choices
 
 The page is public, so it's built to expose as little as possible:
 
-- **Visitors can't send queries.** The PromQL is fixed in the code. Visitors only read cached results, so a flood of traffic costs at most one round of queries every 15 seconds.
+- **Visitors can't send queries.** The PromQL is fixed in the code. Visitors only read cached results, so once the cache is warm, a flood of traffic costs at most one round of queries every 15 seconds.
 - **Only totals are shown.** There are no pod names, IPs or internal hostnames.
 - **No Kubernetes API access.** The data comes from Prometheus, so the pod runs with no service account token.
-- **Locked-down container:**
+- **Locked-down container** (settings are in the homelab manifests):
   - non-root (UID 10001)
   - read-only root filesystem
   - all Linux capabilities dropped
@@ -38,9 +39,9 @@ The page is public, so it's built to expose as little as possible:
   - GitHub Actions are pinned to commit SHAs.
   - Images are published with the workflow's short-lived token, not a stored password.
   - Images ship with build provenance and an SBOM.
-  - Renovate keeps dependencies current: low-risk updates merge once CI passes, and majors wait for review.
+  - Renovate keeps dependencies current: low-risk updates and a weekly lock file refresh merge once CI passes, and majors wait for review.
   - Release tags and `main` are protected from being moved, force-pushed or deleted.
-  - Hooks and a full-history gitleaks scan in CI block leaked credentials.
+  - A pre-commit hook blocks leaked credentials, and CI runs a full-history gitleaks scan. GitHub secret scanning, push protection and Dependabot alerts are on.
 
 ## Run it locally
 
@@ -65,9 +66,14 @@ Then open http://localhost:8000.
 uv run ruff format --check . && uv run ruff check . && uv run pytest
 ```
 
-The tests replace the Prometheus call with a fake one, so they need no cluster. They cover the health check, the response shape, app up/down, the cache, and the 503 path.
+The tests replace the Prometheus call with a fake one, so they need no cluster. They cover the health check, the response shape, app up/down, the cache, the 503 path, and serving the page.
 
-On every push and pull request, GitHub Actions runs the same checks, then builds the image for `linux/amd64` and `linux/arm64` (the cluster has a mini PC and a Raspberry Pi 5). Pushing a `v*` tag publishes the image to `ghcr.io/turpinator-x/homelab-dashboard` with that version. The current release is `v0.1.2`, on Python 3.15. Commit messages follow Conventional Commits, enforced by Commitizen.
+On pushes to `main`, `v*` tags and pull requests, GitHub Actions runs the same checks, then builds the image for `linux/amd64` and `linux/arm64` (the cluster has a mini PC and a Raspberry Pi 5). Pushing a `v*` tag publishes the image to `ghcr.io/turpinator-x/homelab-dashboard` with that version. The current release is `v0.1.2`, on Python 3.15. Commit messages follow Conventional Commits, enforced by Commitizen.
+
+## Project notes
+
+- [docs/status.md](docs/status.md): what's running and known issues
+- [docs/decisions.md](docs/decisions.md): design choices and their reasons
 
 ## Built with AI assistance
 
