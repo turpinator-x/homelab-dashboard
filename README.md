@@ -77,6 +77,6 @@ On pushes to `main`, `v*` tags and pull requests, GitHub Actions runs the same c
 
 ## Built with AI assistance
 
-[Claude Code](https://claude.com/claude-code) wrote the application code: the FastAPI backend (`main.py`), the frontend (`static/index.html`), the tests, the Dockerfile and the CI workflow. I set the requirements and did the hands-on work: Claude Code explained each part, and I typed the commands and pasted and edited the code myself, then reviewed, ran and debugged it. My own focus is the platform side: the CI pipeline, the multi-arch image, the Flux deployment, the pod security settings and the NetworkPolicy, documented in [turpinator-x/homelab](https://github.com/turpinator-x/homelab/blob/main/docs/dashboard.md).
+[Claude Code](https://claude.com/claude-code) wrote the application code: the FastAPI backend (`main.py`), the frontend (`static/index.html`), the tests, the Dockerfile and the CI workflow. I set the requirements, typed and edited the code myself, reviewed it and ran it. I also own how it's deployed: the Flux deployment, the pod security settings and the NetworkPolicy, documented in [turpinator-x/homelab](https://github.com/turpinator-x/homelab/blob/main/docs/dashboard.md).
 
 The project idea comes from the KubeCraft community.
