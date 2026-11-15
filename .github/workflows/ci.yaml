@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# A newer push to a pull request cancels that PR's older run (saves Actions minutes); every other event gets its own group (the run id), so runs on main are never cancelled.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     runs-on: ubuntu-26.04
